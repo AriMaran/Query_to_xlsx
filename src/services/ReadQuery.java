@@ -8,8 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import conn.DBException;
 import conn.OracleConnection;
+import exceptions.DBException;
+import exceptions.ExceptionLogs;
 
 public class ReadQuery {
 

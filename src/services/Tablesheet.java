@@ -13,7 +13,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import conn.DBException;
+import exceptions.DBException;
+import exceptions.ExceptionLogs;
 
 public class Tablesheet {
 

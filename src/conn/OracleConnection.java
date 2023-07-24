@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import services.ExceptionLogs;
-import services.PropertiesFunction;
+import exceptions.DBException;
+import exceptions.ExceptionLogs;
 
 public class OracleConnection {
 

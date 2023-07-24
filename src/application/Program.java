@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 
-import services.ExceptionLogs;
+import exceptions.ExceptionLogs;
 import services.ReadQuery;
 import services.Tablesheet;
 

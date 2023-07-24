@@ -1,4 +1,4 @@
-package conn;
+package exceptions;
 
 public class DBException extends RuntimeException {
 
