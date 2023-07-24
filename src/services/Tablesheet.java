@@ -19,7 +19,7 @@ import exceptions.ExceptionLogs;
 public class Tablesheet {
 
 	private String fileName;
-	private String path;
+	protected String path;
 	ExceptionLogs log = new ExceptionLogs();
 	
 	
@@ -39,18 +39,24 @@ public class Tablesheet {
 			if (obj.createNewFile()) {
 				
 				System.out.println("File created: " + obj.getName());
+				
 			} else {
 				
 				System.out.println("File already exists");
 				System.out.println(path);
 				
 			}
+			
 		} catch (IOException e) {
 			
 			System.err.println("ERROR GENERATING FILE. TRY AGAIN OR CONTACT I.T SUPPORT");
 			log.errorLog(e);
 			log.close();
 			e.printStackTrace();
+			
+		} finally {
+			
+			log.close();
 		}
 	}
 
@@ -95,6 +101,8 @@ public class Tablesheet {
 			try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
 				workbook.write(fileOutputStream);
 				System.out.println("FILE WRITTEN SUCCESSFULLY.");
+				fileOutputStream.close();
+				
 				
 			} catch (IOException e) {
 				
@@ -102,6 +110,7 @@ public class Tablesheet {
 				log.errorLog(e);
 				log.close();
 				e.printStackTrace();
+				
 			}
 
 			workbook.close();
@@ -109,8 +118,10 @@ public class Tablesheet {
 		} catch (SQLException e) {
 			
 			log.errorLog(e);
-			log.close();
 			throw new DBException(e.getMessage());
+		} finally {
+			
+			log.close();
 		}
 	}
 }
