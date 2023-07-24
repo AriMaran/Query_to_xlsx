@@ -1,0 +1,15 @@
+Error date: Mon Jul 24 13:43:55 BRT 2023
+Error message: java.sql.SQLException: The url cannot be null
+Stacktrace: java.sql.SQLException: The url cannot be null
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:664)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:229)
+	at conn.OracleConnection.dbConnect(OracleConnection.java:36)
+	at conn.OracleConnection.<init>(OracleConnection.java:28)
+	at services.ReadQuery.<init>(ReadQuery.java:17)
+	at application.Program.main(Program.java:26)
+tStream.<init>(FileInputStream.java:111)
+	at services.PropertiesFunction.getPropertiesPWD(PropertiesFunction.java:85)
+	at services.PropertiesFunction.<init>(PropertiesFunction.java:17)
+	at conn.OracleConnection.<init>(OracleConnection.java:20)
+	at services.ReadQuery.<init>(ReadQuery.java:17)
+	at application.Program.main(Program.java:26)

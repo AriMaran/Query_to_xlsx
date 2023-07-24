@@ -23,11 +23,6 @@ ENTRADAS.xlsx
 *.xlsl
 src/results/
 
-#Sensible data files
-
-*.sql
-*.properties
-
 # PyDev specific (Python IDE for Eclipse)
 *.pydevproject
 
