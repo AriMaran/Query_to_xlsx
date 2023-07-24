@@ -22,7 +22,6 @@ local.properties
 ENTRADAS.xlsx
 *.xlsl
 src/results/
-src/logs/
 
 #Sensible data files
 
