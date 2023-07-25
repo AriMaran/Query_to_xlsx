@@ -119,6 +119,7 @@ public class Tablesheet {
 			
 			log.errorLog(e);
 			throw new DBException(e.getMessage());
+			
 		} finally {
 			
 			log.close();

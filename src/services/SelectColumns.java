@@ -39,7 +39,9 @@ public class SelectColumns extends Tablesheet {
         System.out.println("Type the column names to keep (separated by commas), or press Enter to keep all columns:");
 
         try (Scanner scanner = new Scanner(System.in)) {
+        	
             String input = scanner.nextLine().trim();
+            
             if (!input.isEmpty()) {
                 String[] columnNamesArray = input.split(",");
                 for (String columnName : columnNamesArray) {
@@ -58,18 +60,22 @@ public class SelectColumns extends Tablesheet {
 
 
     private boolean isValidColumn(ResultSetMetaData metaData, String columnName) throws SQLException {
-        int columnCount = metaData.getColumnCount();
-        for (int i = 1; i <= columnCount; i++) {
+       
+    	int columnCount = metaData.getColumnCount();
+       
+    	for (int i = 1; i <= columnCount; i++) {
             if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
                 return true;
             }
         }
-        return false;
+       
+    	return false;
     }
 
     @Override
     public void writeFile(String query) throws IOException {
-        try {
+     
+    	try {
             ReadQuery q = new ReadQuery();
             ResultSet resultSet = q.querySelect(query);
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -110,7 +116,8 @@ public class SelectColumns extends Tablesheet {
             int rowNumber = 1;
 
             while (resultSet.next()) {
-                Row row = sheet.createRow(rowNumber);
+              
+            	Row row = sheet.createRow(rowNumber);
                 columnIndex = 0;
 
                 if (!columnNames.isEmpty()) {
@@ -148,12 +155,15 @@ public class SelectColumns extends Tablesheet {
             workbook.close();
 
         } catch (SQLException e) {
-            log.errorLog(e);
+           
+        	log.errorLog(e);
             System.out.println("ERROR WRITING FILE");
             throw new DBException(e.getMessage());
             
         } finally {
-            log.close();
+           
+        	log.close();
+        	
         }
     }
 }
