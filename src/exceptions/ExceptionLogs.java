@@ -18,7 +18,7 @@ public class ExceptionLogs {
 			
 		} catch (IOException e) {
 			
-			e.printStackTrace();
+			e.getMessage();
 			
 		}
 	}

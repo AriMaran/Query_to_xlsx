@@ -12,10 +12,11 @@ import exceptions.ExceptionLogs;
 public class OracleConnection {
 
 	private Connection conn = null;
+	ExceptionLogs log = new ExceptionLogs();
 	private ResultSet rs = null;
 	private Statement st = null;
 	
-	ExceptionLogs log = new ExceptionLogs();
+	
 
 	private PropertiesFunction login = new PropertiesFunction();
 
@@ -40,6 +41,8 @@ public class OracleConnection {
 		} catch (SQLException e) {
 
 			System.err.println("Connection failed");
+			System.out.println(dbURL);
+			e.printStackTrace();
 			log.errorLog(e);
 			log.close();
 			throw new DBException(e.getMessage());

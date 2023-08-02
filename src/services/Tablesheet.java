@@ -16,14 +16,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import exceptions.DBException;
 import exceptions.ExceptionLogs;
 
-public class Tablesheet {
+public class TableSheet {
 
 	private String fileName;
 	protected String path;
 	ExceptionLogs log = new ExceptionLogs();
 	
 	
-	public Tablesheet(String fileName) {
+	public TableSheet(String fileName) {
 	
 		this.fileName = fileName;
 		this.path = fileName;
@@ -59,6 +59,19 @@ public class Tablesheet {
 			log.close();
 		}
 	}
+	
+	 public boolean isValidColumn(ResultSetMetaData metaData, String columnName) throws SQLException {
+
+	        int columnCount = metaData.getColumnCount();
+
+	        for (int i = 1; i <= columnCount; i++) {
+	            if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
+	                return true;
+	            }
+	        }
+
+	        return false;
+	    }
 
 	public void writeFile(String query) throws IOException {
 	

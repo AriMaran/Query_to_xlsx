@@ -20,150 +20,150 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import exceptions.DBException;
 import exceptions.ExceptionLogs;
 
-public class SelectColumns extends Tablesheet {
+public class SelectColumns extends TableSheet {
 
-    private List<String> columnNames;
-    ExceptionLogs log = new ExceptionLogs();
+	private List<String> columnNames;
+	private ExceptionLogs log = new ExceptionLogs();
+	private Scanner sc;
 
-    public SelectColumns(String fileName, List<String> columnNames) {
-        super(fileName);
-        this.path = fileName;
-        this.columnNames = columnNames != null ? columnNames : Collections.emptyList(); // Inicializar columnNames com lista vazia, se necessário
-    }
+	public SelectColumns(String fileName, List<String> columnNames) {
 
+		super(fileName);
+		this.path = fileName;
+		this.columnNames = columnNames != null ? columnNames : Collections.emptyList();
+		this.sc = new Scanner(System.in);
 
-    private List<String> selectColumnsInteractive(ResultSetMetaData metaData) throws SQLException {
-        List<String> selectedColumns = new ArrayList<>();
+	}
 
-        System.out.println("Column selection:");
-        System.out.println("Type the column names to keep (separated by commas), or press Enter to keep all columns:");
+	private List<String> selectColumnsInteractive(ResultSetMetaData metaData) throws SQLException {
 
-        try (Scanner scanner = new Scanner(System.in)) {
-        	
-            String input = scanner.nextLine().trim();
-            
-            if (!input.isEmpty()) {
-                String[] columnNamesArray = input.split(",");
-                for (String columnName : columnNamesArray) {
-                    String trimmedColumnName = columnName.trim();
-                    if (isValidColumn(metaData, trimmedColumnName)) {
-                        selectedColumns.add(trimmedColumnName);
-                    } else {
-                        System.out.println("Invalid column name: " + trimmedColumnName);
-                    }
-                }
-            }
-        }
+		List<String> selectedColumns = new ArrayList<>();
 
-        return selectedColumns;
-    }
+		try {
 
+			System.out.println("Column selection:");
+			System.out.println(
+					"Type the column names to keep (separated by commas), or press Enter to keep all columns:");
+			String input = sc.nextLine().trim();
+			if (!input.isEmpty()) {
+				String[] columnNamesArray = input.split(",");
+				for (String columnName : columnNamesArray) {
+					String trimmedColumnName = columnName.trim();
+					if (isValidColumn(metaData, trimmedColumnName)) {
+						selectedColumns.add(trimmedColumnName);
+					} else {
+						System.out.println("Invalid column name: " + trimmedColumnName);
+					}
+				}
+			}
 
-    private boolean isValidColumn(ResultSetMetaData metaData, String columnName) throws SQLException {
-       
-    	int columnCount = metaData.getColumnCount();
-       
-    	for (int i = 1; i <= columnCount; i++) {
-            if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
-                return true;
-            }
-        }
-       
-    	return false;
-    }
+		} catch (Exception e) {
 
-    @Override
-    public void writeFile(String query) throws IOException {
-     
-    	try {
-            ReadQuery q = new ReadQuery();
-            ResultSet resultSet = q.querySelect(query);
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
+			log.errorLog(e);
+			throw new DBException(e.getMessage());
 
-           
-            if (columnNames.isEmpty()) {
-                columnNames = selectColumnsInteractive(metaData);
-            }
+		}
 
-            Workbook workbook = new XSSFWorkbook();
-            Sheet sheet = workbook.createSheet("Sheet1");
+		return selectedColumns;
+	}
 
-            Row headerRow = sheet.createRow(0);
-            int columnIndex = 0;
+	@Override
+	public void writeFile(String query) throws IOException {
 
-            
-            if (!columnNames.isEmpty()) {
-                for (String columnName : columnNames) {
-                    for (int i = 1; i <= columnCount; i++) {
-                        if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
-                            Cell cell = headerRow.createCell(columnIndex);
-                            cell.setCellValue(columnName);
-                            columnIndex++;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = metaData.getColumnName(i);
-                    Cell cell = headerRow.createCell(columnIndex);
-                    cell.setCellValue(columnName);
-                    columnIndex++;
-                }
-            }
+		try {
 
-            int rowNumber = 1;
+			ReadQuery q = new ReadQuery();
+			ResultSet resultSet = q.querySelect(query);
+			ResultSetMetaData metaData = resultSet.getMetaData();
+			int columnCount = metaData.getColumnCount();
 
-            while (resultSet.next()) {
-              
-            	Row row = sheet.createRow(rowNumber);
-                columnIndex = 0;
+			if (columnNames.isEmpty()) {
+				columnNames = selectColumnsInteractive(metaData);
+			}
 
-                if (!columnNames.isEmpty()) {
-                    for (String columnName : columnNames) {
-                        for (int i = 1; i <= columnCount; i++) {
-                            if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
-                                String columnValue = resultSet.getString(i);
-                                Cell cell = row.createCell(columnIndex);
-                                cell.setCellValue(columnValue);
-                                columnIndex++;
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    for (int i = 1; i <= columnCount; i++) {
-                        String columnValue = resultSet.getString(i);
-                        Cell cell = row.createCell(columnIndex);
-                        cell.setCellValue(columnValue);
-                        columnIndex++;
-                    }
-                }
+			Workbook workbook = new XSSFWorkbook();
+			Sheet sheet = workbook.createSheet("Sheet1");
 
-                rowNumber++;
-            }
+			Row headerRow = sheet.createRow(0);
+			int columnIndex = 0;
 
-            File outputFile = new File(path);
-            outputFile.getParentFile().mkdirs();
+			if (!columnNames.isEmpty()) {
+				for (String columnName : columnNames) {
+					for (int i = 1; i <= columnCount; i++) {
+						if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
+							Cell cell = headerRow.createCell(columnIndex);
+							cell.setCellValue(columnName);
+							columnIndex++;
+							break;
+						}
+					}
+				}
 
-            try (FileOutputStream fileOut = new FileOutputStream(outputFile)) {
-                workbook.write(fileOut);
-                System.out.println("FILE WRITTEN SUCCESSFULLY.");
-            }
+			} else {
 
-            workbook.close();
+				for (int i = 1; i <= columnCount; i++) {
+					String columnName = metaData.getColumnName(i);
+					Cell cell = headerRow.createCell(columnIndex);
+					cell.setCellValue(columnName);
+					columnIndex++;
+				}
+			}
 
-        } catch (SQLException e) {
-           
-        	log.errorLog(e);
-            System.out.println("ERROR WRITING FILE");
-            throw new DBException(e.getMessage());
-            
-        } finally {
-           
-        	log.close();
-        	
-        }
-    }
+			int rowNumber = 1;
+
+			while (resultSet.next()) {
+				Row row = sheet.createRow(rowNumber);
+				columnIndex = 0;
+
+				if (!columnNames.isEmpty()) {
+					for (String columnName : columnNames) {
+						for (int i = 1; i <= columnCount; i++) {
+							if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
+								String columnValue = resultSet.getString(i);
+								Cell cell = row.createCell(columnIndex);
+								cell.setCellValue(columnValue);
+								columnIndex++;
+								break;
+							}
+						}
+					}
+				} else {
+
+					for (int i = 1; i <= columnCount; i++) {
+						String columnValue = resultSet.getString(i);
+						Cell cell = row.createCell(columnIndex);
+						cell.setCellValue(columnValue);
+						columnIndex++;
+
+					}
+				}
+
+				rowNumber++;
+			}
+
+			File outputFile = new File(path);
+			outputFile.getParentFile().mkdirs();
+
+			try (FileOutputStream fileOut = new FileOutputStream(outputFile)) {
+				
+				workbook.write(fileOut);
+				System.out.println("FILE WRITTEN SUCCESSFULLY.");
+				
+			}
+
+			workbook.close();
+
+		} catch (SQLException e) {
+			
+			log.errorLog(e);
+			System.out.println("ERROR WRITING FILE");
+			throw new DBException(e.getMessage());
+
+		} finally {
+
+			sc.close();
+			log.close();
+
+		}
+	}
 }

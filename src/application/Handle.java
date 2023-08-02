@@ -4,52 +4,62 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Scanner;
 
 import exceptions.ExceptionLogs;
 import services.ReadQuery;
 import services.SelectColumns;
+import services.SelectDate;
 
 public class Handle {
 
-    public Handle() {
+	private Scanner sc;
 
-    }
+	public Handle() {
 
-    public void start() {
-    	
-        ExceptionLogs log = new ExceptionLogs();
+		sc = new Scanner(System.in);
 
-        try {
+	}
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+	public void start() {
 
-            System.out.print("Digite o nome do arquivo de saída: ");
-            String outputFileName = reader.readLine();
-            String outputPath = "src/results/" + outputFileName + ".xlsx";
+		ExceptionLogs log = new ExceptionLogs();
 
-            ReadQuery q = new ReadQuery();
+		try {
 
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            String query = q.readQueryFile();
+			System.out.print("Enter the name of the output file: ");
+			String outputFileName = reader.readLine();
+			String outputPath = "src/results/" + outputFileName + ".xlsx";
 
-            List<String> selectedColumns = null;
+			ReadQuery q = new ReadQuery();
+			String query = q.readQueryFile();
 
-   
-            SelectColumns choose = new SelectColumns(outputPath, selectedColumns);
-            choose.writeFile(query);
+			SelectDate dateSelector = new SelectDate();
+			String startDate = dateSelector.getStartDateFromUser();
+			String endDate = dateSelector.getEndDateFromUser();
 
-            reader.close();
+			query = dateSelector.updateQueryWithDates(query, startDate, endDate);
 
-        } catch (IOException e) {
+			List<String> selectedColumns = null;
 
-            System.err.println("ERROR");
-            log.errorLog(e);
-            e.printStackTrace();
-            
-        } finally {
-        	
-        	log.close();
-        	
-        }
-    }
+			SelectColumns choose = new SelectColumns(outputPath, selectedColumns);
+			choose.writeFile(query);
+
+			reader.close();
+
+		} catch (IOException e) {
+			
+			System.err.println("ERROR");
+			log.errorLog(e);
+			e.printStackTrace();
+			
+		} finally {
+			
+			sc.close();
+			log.close();
+			
+		}
+	}
 }
